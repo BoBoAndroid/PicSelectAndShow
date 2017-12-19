@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">MultiSelectImage</string>
+
+    <string name="mis_folder_all">所有</string>
+    <string name="mis_preview">预览</string>
+    <string name="mis_msg_no_camera">没有发现相机</string>
+    <string name="mis_msg_amount_limit">超过可选数量</string>
+    <string name="mis_action_done">完成</string>
+    <string name="mis_action_button_string">%1$s(%2$d/%3$d)</string>
+    <string name="mis_photo_unit">Shot</string>
+    <string name="mis_tip_take_photo">拍照</string>
+    <string name="mis_error_image_not_exist">图片错误</string>
+    <string name="mis_error_no_permission">没有权限</string>
+    <string name="mis_permission_dialog_title">Permission Deny</string>
+    <string name="mis_permission_dialog_ok">OK</string>
+    <string name="mis_permission_dialog_cancel">CANCEL</string>
+    <string name="mis_permission_rationale">Storage read permission is needed to pick files.</string>
+    <string name="mis_permission_rationale_write_storage">Storage write permission is needed to save the image.</string>
+
+    <string name="action_settings">Settings</string>
+</resources>
