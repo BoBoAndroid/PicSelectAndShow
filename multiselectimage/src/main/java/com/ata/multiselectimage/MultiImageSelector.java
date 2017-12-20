@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
@@ -19,7 +20,7 @@ import java.util.ArrayList;
 public class MultiImageSelector{
 
     public static final String EXTRA_RESULT = MultiImageSelectorActivity.EXTRA_RESULT;
-
+    public static final int REQUEST_GET_ACCOUNT=110;
     private boolean mShowCamera = true;
     private int mMaxCount = 9;
     private int mMode = MultiImageSelectorActivity.MODE_MULTI;
@@ -78,6 +79,7 @@ public class MultiImageSelector{
 
     public MultiImageSelector takePhoto(boolean flag){
         mMode = MultiImageSelectorActivity.MODE_SINGLE;
+        mShowCamera=true;
         isTakePhoto=flag;
         return sSelector;
     }
@@ -101,6 +103,21 @@ public class MultiImageSelector{
             activity.startActivityForResult(createIntent(context), requestCode);
         }else{
             Toast.makeText(context, R.string.mis_error_no_permission, Toast.LENGTH_SHORT).show();
+            requestPermission(activity);
+        }
+    }
+    private void requestPermission(Activity activity) {
+        if (mShowCamera) {
+            if(ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, REQUEST_GET_ACCOUNT);
+            }else {
+                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, REQUEST_GET_ACCOUNT);
+
+            }
+        }else {
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_GET_ACCOUNT);
+
         }
     }
 
@@ -110,14 +127,23 @@ public class MultiImageSelector{
             fragment.startActivityForResult(createIntent(context), requestCode);
         }else{
             Toast.makeText(context, R.string.mis_error_no_permission, Toast.LENGTH_SHORT).show();
+            requestPermission(fragment.getActivity());
         }
     }
 
     private boolean hasPermission(Context context){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN){
             // Permission was added in API Level 16
-            return ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)
-                    == PackageManager.PERMISSION_GRANTED;
+            if(mShowCamera){
+                return ((ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED)&&(ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED)&&(ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+                        == PackageManager.PERMISSION_GRANTED));
+            }else {
+                return ((ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED));
+            }
         }
         return true;
     }

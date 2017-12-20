@@ -10,18 +10,36 @@
         android:layout_width="0dp"
         android:layout_height="50dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/bt_more"
+        app:layout_constraintRight_toLeftOf="@+id/bt_single_no"
         app:layout_constraintTop_toTopOf="parent"
         android:text="单选"
+        android:onClick="onClick"/>
+    <Button
+        android:id="@+id/bt_single_no"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        app:layout_constraintLeft_toRightOf="@+id/bt_single"
+        app:layout_constraintRight_toLeftOf="@+id/bt_more"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="单选不拍照"
         android:onClick="onClick"/>
     <Button
         android:id="@+id/bt_more"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        app:layout_constraintLeft_toRightOf="@id/bt_single"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/bt_single_no"
+        app:layout_constraintRight_toLeftOf="@+id/bt_more_no"
         app:layout_constraintTop_toTopOf="parent"
         android:text="多选"
+        android:onClick="onClick"/>
+    <Button
+        android:id="@+id/bt_more_no"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        app:layout_constraintLeft_toRightOf="@+id/bt_more"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:text="多选不拍照"
         android:onClick="onClick"/>
     <Button
         android:id="@+id/bt_take_photo"
