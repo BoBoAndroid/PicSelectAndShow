@@ -15,7 +15,7 @@
 
           }
 
-然后就是加依赖了：compile 'com.github.BoBoAndroid:PicSelectAndShow:1.0'
+然后就是加依赖了：compile 'com.github.BoBoAndroid:PicSelectAndShow:1.0'<br/>
 最新版的依赖：compile 'com.github.BoBoAndroid:PicSelectAndShow:1.01'
 #### 注意事项：<br/>
 最好程序里面把操作相机，和读写存储卡的权限给允许了，虽然框架有兼容处理，他会弹出选择然后再点击才能进入，体验不是很好。后续再研究怎么解决一下。<br/>
