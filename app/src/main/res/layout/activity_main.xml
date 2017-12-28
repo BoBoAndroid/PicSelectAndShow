@@ -5,13 +5,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.bobo.test.MainActivity">
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:text="首页"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="18sp"
+        android:gravity="center"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
     <Button
         android:id="@+id/bt_single"
         android:layout_width="0dp"
         android:layout_height="50dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/bt_single_no"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_title"
         android:text="单选"
         android:onClick="onClick"/>
     <Button
@@ -20,7 +31,7 @@
         android:layout_height="50dp"
         app:layout_constraintLeft_toRightOf="@+id/bt_single"
         app:layout_constraintRight_toLeftOf="@+id/bt_more"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_title"
         android:text="单选不拍照"
         android:onClick="onClick"/>
     <Button
@@ -29,7 +40,7 @@
         android:layout_height="50dp"
         app:layout_constraintLeft_toRightOf="@+id/bt_single_no"
         app:layout_constraintRight_toLeftOf="@+id/bt_more_no"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_title"
         android:text="多选"
         android:onClick="onClick"/>
     <Button
@@ -38,7 +49,7 @@
         android:layout_height="50dp"
         app:layout_constraintLeft_toRightOf="@+id/bt_more"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_title"
         android:text="多选不拍照"
         android:onClick="onClick"/>
     <Button
@@ -59,13 +70,24 @@
         app:layout_constraintTop_toBottomOf="@+id/bt_take_photo"
         android:text="拍照指定路径"
         android:onClick="onClick"/>
+    <TextView
+        android:id="@+id/tv_tip"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:text="长按查看图片携带的信息"
+        android:gravity="center_vertical"
+        android:textColor="@color/colorPrimary"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bt_takephoto_path"
+        android:visibility="gone"/>
     <GridView
         android:id="@+id/grid_show"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bt_takephoto_path"
+        app:layout_constraintTop_toBottomOf="@+id/tv_tip"
         app:layout_constraintBottom_toBottomOf="parent"
         android:scrollbars="none"
         android:numColumns="5"></GridView>

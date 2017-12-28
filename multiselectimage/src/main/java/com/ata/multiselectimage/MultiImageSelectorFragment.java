@@ -384,6 +384,7 @@ public class MultiImageSelectorFragment extends Fragment {
      * @param image image data
      */
     private void selectImageFromGrid(Image image, int mode) {
+
         if(image != null) {
             if(mode == MODE_MULTI) {
                 if (resultList.contains(image.path)) {
@@ -403,6 +404,7 @@ public class MultiImageSelectorFragment extends Fragment {
                 }
                 mImageAdapter.select(image);
             }else if(mode == MODE_SINGLE){
+
                 if(mCallback != null){
                     mCallback.onSingleImageSelected(image.path);
                 }

@@ -1,12 +1,18 @@
 package com.ata.multiselectimage;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -14,6 +20,7 @@ import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.ata.multiselectimage.utils.FileProvider7;
 import com.ata.multiselectimage.utils.FileUtils;
@@ -53,6 +60,9 @@ public class MultiImageSelectorActivity extends AppCompatActivity implements Mul
     private int mDefaultCount = DEFAULT_IMAGE_SIZE;
     boolean isTakePhoto=false;
     private String filePath=null;
+    private boolean isShow=true;
+    Toolbar toolbar;
+    private int mode=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +73,7 @@ public class MultiImageSelectorActivity extends AppCompatActivity implements Mul
             getWindow().setStatusBarColor(Color.BLACK);
         }
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar= (Toolbar) findViewById(R.id.toolbar);
         if(toolbar != null){
             setSupportActionBar(toolbar);
         }
@@ -75,13 +85,14 @@ public class MultiImageSelectorActivity extends AppCompatActivity implements Mul
 
         final Intent intent = getIntent();
         mDefaultCount = intent.getIntExtra(EXTRA_SELECT_COUNT, DEFAULT_IMAGE_SIZE);
-        final int mode = intent.getIntExtra(EXTRA_SELECT_MODE, MODE_MULTI);
-        final boolean isShow = intent.getBooleanExtra(EXTRA_SHOW_CAMERA, true);
+        mode= intent.getIntExtra(EXTRA_SELECT_MODE, MODE_MULTI);
+        isShow = intent.getBooleanExtra(EXTRA_SHOW_CAMERA, true);
         if(mode == MODE_MULTI && intent.hasExtra(EXTRA_DEFAULT_SELECTED_LIST)) {
             resultList = intent.getStringArrayListExtra(EXTRA_DEFAULT_SELECTED_LIST);
         }
         isTakePhoto=intent.getBooleanExtra(EXTRA_TAKE_PHOTO,false);
         filePath=intent.getStringExtra(EXTRA_PHOTO_FILE);
+
         mSubmitButton = (Button) findViewById(R.id.commit);
         if(mode == MODE_MULTI){
             updateDoneText(resultList);
@@ -147,7 +158,7 @@ public class MultiImageSelectorActivity extends AppCompatActivity implements Mul
             mSubmitButton.setVisibility(View.GONE);
         }
 
-        if(savedInstanceState == null){
+        /*if(savedInstanceState == null){
             Bundle bundle = new Bundle();
             bundle.putInt(MultiImageSelectorFragment.EXTRA_SELECT_COUNT, mDefaultCount);
             bundle.putInt(MultiImageSelectorFragment.EXTRA_SELECT_MODE, mode);
@@ -161,8 +172,35 @@ public class MultiImageSelectorActivity extends AppCompatActivity implements Mul
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.image_grid, Fragment.instantiate(this, MultiImageSelectorFragment.class.getName(), bundle))
                     .commit();
-        }
+        }*/
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //开始判断权限
+        if(!hasPermission(MultiImageSelectorActivity.this)) {
+            toolbar.setVisibility(View.GONE);
+            Toast.makeText(MultiImageSelectorActivity.this, R.string.mis_error_no_permission, Toast.LENGTH_SHORT).show();
+            requestPermission(MultiImageSelectorActivity.this);
+        }else {
+                toolbar.setVisibility(View.VISIBLE);
+                Bundle bundle = new Bundle();
+                bundle.putInt(MultiImageSelectorFragment.EXTRA_SELECT_COUNT, mDefaultCount);
+                bundle.putInt(MultiImageSelectorFragment.EXTRA_SELECT_MODE, mode);
+                bundle.putBoolean(MultiImageSelectorFragment.EXTRA_SHOW_CAMERA, isShow);
+                bundle.putBoolean(MultiImageSelectorFragment.EXTRA_TAKE_PHOTO,isTakePhoto);
+                if(!TextUtils.isEmpty(filePath)){
+                    bundle.putString(MultiImageSelectorFragment.EXTRA_PHOTO_PATH,filePath);
+                }
+                bundle.putStringArrayList(MultiImageSelectorFragment.EXTRA_DEFAULT_SELECTED_LIST, resultList);
+
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.image_grid, Fragment.instantiate(this, MultiImageSelectorFragment.class.getName(), bundle))
+                        .commit();
+
+        }
     }
 
     @Override
@@ -175,6 +213,7 @@ public class MultiImageSelectorActivity extends AppCompatActivity implements Mul
         }
         return super.onOptionsItemSelected(item);
     }
+
 
     /**
      * Update done button by select image data
@@ -224,19 +263,6 @@ public class MultiImageSelectorActivity extends AppCompatActivity implements Mul
             // notify system the image has change
             Uri uri=FileProvider7.getUriForFile(this, imageFile);
             sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
-               /* try {
-                    String imgPath = FileUtils.loadBitmap(imageFile.getAbsolutePath(), true,null);
-                    if (!TextUtils.isEmpty(imgPath)) {
-                        Intent data = new Intent();
-                        resultList.add(imgPath);
-                        data.putStringArrayListExtra(EXTRA_RESULT, resultList);
-                        setResult(RESULT_OK, data);
-                        finish();
-                        //FileUtils.deleteFile(imageFile.getAbsolutePath());
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }*/
             if(judgeRollImg(imageFile.getAbsolutePath())) {
                 Bitmap bitmap = FileUtils.loadBitmap(imageFile.getAbsolutePath(), true);
                 try {
@@ -262,5 +288,36 @@ public class MultiImageSelectorActivity extends AppCompatActivity implements Mul
         }else {
             finish();
         }
+    }
+    private void requestPermission(Activity activity) {
+        if (isShow) {
+            if(ContextCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, MultiImageSelector.REQUEST_GET_ACCOUNT);
+            }else {
+                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.CAMERA}, MultiImageSelector.REQUEST_GET_ACCOUNT);
+
+            }
+        }else {
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE}, MultiImageSelector.REQUEST_GET_ACCOUNT);
+
+        }
+    }
+
+    private boolean hasPermission(Context context){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN){
+            // Permission was added in API Level 16
+            if(isShow){
+                return ((ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED)&&(ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED)&&(ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+                        == PackageManager.PERMISSION_GRANTED));
+            }else {
+                return ((ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED) && (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED));
+            }
+        }
+        return true;
     }
 }
