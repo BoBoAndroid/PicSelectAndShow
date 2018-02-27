@@ -39,6 +39,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".InfoActivity"/>
+        <activity android:name=".PathSelectActivity"
+            android:theme="@style/Theme.AppCompat"/>
     </application>
 
 </manifest>

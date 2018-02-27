@@ -3,7 +3,6 @@ package com.bobo.test;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.AdapterView;
@@ -19,11 +18,13 @@ import java.util.ArrayList;
 
 public class MainActivity extends Activity {
     private static final int REQUEST_PHOTO_IMAGE = 2;
+    private static final int REQUEST_CODE_IMAGE_PATH=3;
     public static final String INTENT_EXTRA_IMGPATH="image_path";
     private ArrayList<String> lstPhotoPath=new ArrayList<>();
     private GridViewAdapter adapter;
     GridView grid_show;
     TextView tv_tip;
+    private String image_path;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,7 +108,7 @@ public class MainActivity extends Activity {
                 /**
                  * 调用拍照功能，直接调起拍照，指定图片存储路径
                  * */
-                File appDir =new File(
+                /*File appDir =new File(
                         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "TestPic");
                 if (!appDir.exists()) {
                     appDir.mkdir();
@@ -116,7 +117,9 @@ public class MainActivity extends Activity {
                 String fileName = System.currentTimeMillis() + ".jpg";
 
                 File file1 = new File(appDir, fileName);
-                MultiImageSelector.create().takePhoto(true).registerFile(file1).start(MainActivity.this,REQUEST_PHOTO_IMAGE);
+               MultiImageSelector.create().takePhoto(true).registerFile(file1).start(MainActivity.this,REQUEST_PHOTO_IMAGE);*/
+                Intent intent=new Intent(MainActivity.this,PathSelectActivity.class);
+                startActivityForResult(intent,REQUEST_CODE_IMAGE_PATH);
                 break;
         }
     }
@@ -131,6 +134,14 @@ public class MainActivity extends Activity {
                 adapter=new GridViewAdapter(MainActivity.this,lstPhotoPath,5);
                 grid_show.setAdapter(adapter);
             }
+        }else if(requestCode==REQUEST_CODE_IMAGE_PATH){
+            if(resultCode==RESULT_OK){
+                image_path=data.getStringExtra(INTENT_EXTRA_IMGPATH);
+                String fileName = System.currentTimeMillis() + ".jpg";
+                File appDir=new File(image_path);
+                File file1 = new File(appDir, fileName);
+                MultiImageSelector.create().takePhoto(true).registerFile(file1).start(MainActivity.this,REQUEST_PHOTO_IMAGE);
+            }
         }
     }
 
@@ -141,5 +152,7 @@ public class MainActivity extends Activity {
 
         }
     }
+
+
 }
 
