@@ -33,6 +33,18 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:src="@drawable/mis_btn_unselected"/>
-
+    <FrameLayout
+        android:id="@+id/fl_video_sign"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_gravity="bottom"
+        android:background="#e0000000">
+        <ImageView
+            android:layout_width="15dp"
+            android:layout_height="8dp"
+            android:layout_marginLeft="5dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_local_videosmall"/>
+    </FrameLayout>
 </com.ata.multiselectimage.view.SquareFrameLayout>
 

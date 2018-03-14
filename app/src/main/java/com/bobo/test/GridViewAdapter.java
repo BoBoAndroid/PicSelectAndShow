@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -61,6 +62,7 @@ public class GridViewAdapter extends BaseAdapter {
             view=inflater.inflate(R.layout.item_pic_show,null);
             viewHolder=new ViewHolder();
             viewHolder.iv_show=view.findViewById(R.id.iv_show);
+            viewHolder.fl_video_sign=view.findViewById(R.id.fl_video_sign);
             ViewGroup.LayoutParams layoutParams = viewHolder.iv_show.getLayoutParams();
             layoutParams.height = mGridWidth;
             viewHolder.iv_show.setLayoutParams(layoutParams);
@@ -72,11 +74,17 @@ public class GridViewAdapter extends BaseAdapter {
                 .tag(MultiImageSelectorFragment.TAG)
                 .resize(mGridWidth, mGridWidth)
                 .centerCrop().into(viewHolder.iv_show);*/
+        if(list.get(i).endsWith("3gp")||list.get(i).endsWith("mp4")){
+            viewHolder.fl_video_sign.setVisibility(View.VISIBLE);
+        }else {
+            viewHolder.fl_video_sign.setVisibility(View.GONE);
+        }
         Glide.with(mContext).load(new File(list.get(i))).override(mGridWidth,mGridWidth).placeholder(com.ata.multiselectimage.R.drawable.mis_default_error).error(com.ata.multiselectimage.R.drawable.mis_default_error).centerCrop().into(viewHolder.iv_show);
 
         return view;
     }
     public class ViewHolder{
         ImageView iv_show;
+        FrameLayout fl_video_sign;
     }
 }

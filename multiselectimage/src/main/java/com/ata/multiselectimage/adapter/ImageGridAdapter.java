@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.ata.multiselectimage.R;
@@ -190,11 +191,13 @@ public class ImageGridAdapter  extends BaseAdapter {
         ImageView image;
         ImageView indicator;
         View mask;
+        FrameLayout fl_video_sign;
 
         ViewHolder(View view){
             image = (ImageView) view.findViewById(R.id.image);
             indicator = (ImageView) view.findViewById(R.id.checkmark);
             mask = view.findViewById(R.id.mask);
+            fl_video_sign= (FrameLayout) view.findViewById(R.id.fl_video_sign);
             view.setTag(this);
         }
 
@@ -214,6 +217,11 @@ public class ImageGridAdapter  extends BaseAdapter {
                 }
             }else{
                 indicator.setVisibility(View.GONE);
+            }
+            if(data.path.endsWith("3gp")||data.path.endsWith("mp4")){
+                fl_video_sign.setVisibility(View.VISIBLE);
+            }else {
+                fl_video_sign.setVisibility(View.GONE);
             }
             File imageFile = new File(data.path);
             if (imageFile.exists()) {

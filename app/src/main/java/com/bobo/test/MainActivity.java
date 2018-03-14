@@ -127,6 +127,9 @@ public class MainActivity extends Activity {
                 Intent intent=new Intent(MainActivity.this,PathSelectActivity.class);
                 startActivityForResult(intent,REQUEST_CODE_IMAGE_PATH);
                 break;
+            /**
+             * 调用选择本地视频的方法
+             * */
             case R.id.bt_select_video:
                 MultiImageSelector.create().selectVideo(true).start(MainActivity.this,REQUEST_PHOTO_IMAGE);
                 break;
