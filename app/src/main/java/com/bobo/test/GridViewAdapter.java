@@ -10,8 +10,7 @@ import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
-import com.ata.multiselectimage.MultiImageSelectorFragment;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -62,14 +61,19 @@ public class GridViewAdapter extends BaseAdapter {
             view=inflater.inflate(R.layout.item_pic_show,null);
             viewHolder=new ViewHolder();
             viewHolder.iv_show=view.findViewById(R.id.iv_show);
+            ViewGroup.LayoutParams layoutParams = viewHolder.iv_show.getLayoutParams();
+            layoutParams.height = mGridWidth;
+            viewHolder.iv_show.setLayoutParams(layoutParams);
             view.setTag(viewHolder);
         }else {
             viewHolder= (ViewHolder) view.getTag();
         }
-        Picasso.with(mContext).load(new File(list.get(i))).placeholder(com.ata.multiselectimage.R.drawable.mis_default_error)
+        /*Picasso.with(mContext).load(new File(list.get(i))).placeholder(com.ata.multiselectimage.R.drawable.mis_default_error)
                 .tag(MultiImageSelectorFragment.TAG)
                 .resize(mGridWidth, mGridWidth)
-                .centerCrop().into(viewHolder.iv_show);
+                .centerCrop().into(viewHolder.iv_show);*/
+        Glide.with(mContext).load(new File(list.get(i))).override(mGridWidth,mGridWidth).placeholder(com.ata.multiselectimage.R.drawable.mis_default_error).error(com.ata.multiselectimage.R.drawable.mis_default_error).centerCrop().into(viewHolder.iv_show);
+
         return view;
     }
     public class ViewHolder{

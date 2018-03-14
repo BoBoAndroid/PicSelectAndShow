@@ -27,6 +27,7 @@ public class MultiImageSelector{
     private ArrayList<String> mOriginData;
     private static MultiImageSelector sSelector;
     private boolean isTakePhoto=false;
+    private boolean isVideo=false;
     private File file;
     @Deprecated
     private MultiImageSelector(Context context){
@@ -63,12 +64,14 @@ public class MultiImageSelector{
     public MultiImageSelector single(){
         mMode = MultiImageSelectorActivity.MODE_SINGLE;
         isTakePhoto=false;
+        isVideo=false;
         return sSelector;
     }
 
     public MultiImageSelector multi(){
         mMode = MultiImageSelectorActivity.MODE_MULTI;
         isTakePhoto=false;
+        isVideo=false;
         return sSelector;
     }
 
@@ -81,6 +84,13 @@ public class MultiImageSelector{
         mMode = MultiImageSelectorActivity.MODE_SINGLE;
         mShowCamera=true;
         isTakePhoto=flag;
+        return sSelector;
+    }
+
+    public MultiImageSelector selectVideo(boolean flag){
+        mShowCamera=false;
+        isTakePhoto=false;
+        isVideo=flag;
         return sSelector;
     }
 
@@ -153,6 +163,7 @@ public class MultiImageSelector{
         }
         intent.putExtra(MultiImageSelectorActivity.EXTRA_SELECT_MODE, mMode);
         intent.putExtra(MultiImageSelectorActivity.EXTRA_TAKE_PHOTO,isTakePhoto);
+        intent.putExtra(MultiImageSelectorActivity.EXTRA_SELECT_VIDEO,isVideo);
         if(file!=null){
             intent.putExtra(MultiImageSelectorActivity.EXTRA_PHOTO_FILE,file.getAbsolutePath());
         }

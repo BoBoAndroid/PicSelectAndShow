@@ -111,6 +111,9 @@ public class PathSelectActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * 点击listview的item更新listview的内容方法
+     * */
     private void scanFile(File file) {
         list.clear();
         if (file.exists()) {

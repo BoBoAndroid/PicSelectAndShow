@@ -74,6 +74,8 @@ public class MultiImageSelectorFragment extends Fragment {
 
     public static final String EXTRA_TAKE_PHOTO="take_photo";
 
+    public static final String EXTRA_SELECT_VIDEO="select_video";
+
     public static final String EXTRA_PHOTO_PATH="photo_path";
     /** Original data set */
     public static final String EXTRA_DEFAULT_SELECTED_LIST = "default_list";
@@ -226,7 +228,7 @@ public class MultiImageSelectorFragment extends Fragment {
                         mFolderPopupWindow.dismiss();
 
                         if (index == 0) {
-                            getActivity().getSupportLoaderManager().restartLoader(LOADER_ALL, null, mLoaderCallback);
+                            getActivity().getSupportLoaderManager().restartLoader(LOADER_ALL, null, mVideoLoaderCallback);
                             mCategoryText.setText(R.string.mis_folder_all);
                             if (showCamera()) {
                                 mImageAdapter.setShowCamera(true);
@@ -272,7 +274,12 @@ public class MultiImageSelectorFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         // load image data
         if(!isTakePhoto()) {
-            getActivity().getSupportLoaderManager().initLoader(LOADER_ALL, null, mLoaderCallback);
+            if(isSelectVideo()) {
+                getActivity().getSupportLoaderManager().initLoader(LOADER_ALL, null, mVideoLoaderCallback);
+            }else {
+                getActivity().getSupportLoaderManager().initLoader(LOADER_ALL, null, mLoaderCallback);
+
+            }
         }
     }
 
@@ -411,7 +418,184 @@ public class MultiImageSelectorFragment extends Fragment {
             }
         }
     }
+    //加载本地视频文件的缩略图
+    private LoaderManager.LoaderCallbacks<Cursor> mThumbVideoLoaderCallback=new LoaderManager.LoaderCallbacks<Cursor>() {
+        private final String[] THUMB_PROJECTION={
+                MediaStore.Video.Thumbnails.DATA,
+                MediaStore.Video.Thumbnails._ID
+        };
 
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            CursorLoader cursorLoader = null;
+            if(id == LOADER_ALL) {
+                cursorLoader = new CursorLoader(getActivity(),
+                        MediaStore.Video.Thumbnails.EXTERNAL_CONTENT_URI, THUMB_PROJECTION,
+                        null,
+                        null, null);
+            }else if(id == LOADER_CATEGORY){
+                cursorLoader = new CursorLoader(getActivity(),
+                        MediaStore.Video.Thumbnails.EXTERNAL_CONTENT_URI, THUMB_PROJECTION,
+                        null,
+                        null, null);
+            }
+            return cursorLoader;
+        }
+
+        private boolean fileExist(String path){
+            if(!TextUtils.isEmpty(path)){
+                return new File(path).exists();
+            }
+            return false;
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            if (data != null) {
+                if (data.getCount() > 0) {
+                    List<Image> images = new ArrayList<>();
+                    data.moveToFirst();
+                    do{
+                        String path = data.getString(data.getColumnIndexOrThrow(THUMB_PROJECTION[0]));
+                        String name = data.getString(data.getColumnIndexOrThrow(THUMB_PROJECTION[1]));
+                        if(!fileExist(path)){continue;}
+                        Image image = null;
+                        if (!TextUtils.isEmpty(name)) {
+                            image = new Image(path, name,0);
+                            images.add(image);
+                        }
+                        if( !hasFolderGened ) {
+                            // get all folder data
+                            File folderFile = new File(path).getParentFile();
+                            if(folderFile != null && folderFile.exists()){
+                                String fp = folderFile.getAbsolutePath();
+                                Folder f = getFolderByPath(fp);
+                                if(f == null){
+                                    Folder folder = new Folder();
+                                    folder.name = folderFile.getName();
+                                    folder.path = fp;
+                                    folder.cover = image;
+                                    List<Image> imageList = new ArrayList<>();
+                                    imageList.add(image);
+                                    folder.images = imageList;
+                                    mResultFolder.add(folder);
+                                }else {
+                                    f.images.add(image);
+                                }
+                            }
+                        }
+
+                    }while(data.moveToNext());
+
+                    mImageAdapter.setData(images);
+                    if(resultList != null && resultList.size()>0){
+                        mImageAdapter.setDefaultSelected(resultList);
+                    }
+                    if(!hasFolderGened) {
+                        mFolderAdapter.setData(mResultFolder);
+                        hasFolderGened = true;
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+
+        }
+    };
+
+
+        //加载本地视频文件
+    private LoaderManager.LoaderCallbacks<Cursor> mVideoLoaderCallback=new LoaderManager.LoaderCallbacks<Cursor>() {
+        private final String[] VIDEO_PROJECTION={
+                MediaStore.Video.Media.DATA,
+                MediaStore.Video.Media.TITLE,
+                MediaStore.Video.Media.DATE_ADDED,
+                MediaStore.Video.Media.MIME_TYPE,
+                MediaStore.Video.Media.SIZE,
+                MediaStore.Video.Media._ID
+        };
+
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            CursorLoader cursorLoader = null;
+            if(id == LOADER_ALL) {
+                cursorLoader = new CursorLoader(getActivity(),
+                        MediaStore.Video.Media.EXTERNAL_CONTENT_URI, VIDEO_PROJECTION,
+                        VIDEO_PROJECTION[4]+">0 AND "+VIDEO_PROJECTION[3]+"=? OR "+VIDEO_PROJECTION[3]+"=? ",
+                        new String[]{"video/3gp", "video/mp4"}, VIDEO_PROJECTION[2] + " DESC");
+            }else if(id == LOADER_CATEGORY){
+                cursorLoader = new CursorLoader(getActivity(),
+                        MediaStore.Video.Media.EXTERNAL_CONTENT_URI, VIDEO_PROJECTION,
+                        VIDEO_PROJECTION[4]+">0 AND "+VIDEO_PROJECTION[0]+" like '%"+args.getString("path")+"%'",
+                        null, VIDEO_PROJECTION[2] + " DESC");
+            }
+            return cursorLoader;
+        }
+        private boolean fileExist(String path){
+            if(!TextUtils.isEmpty(path)){
+                return new File(path).exists();
+            }
+            return false;
+        }
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            if (data != null) {
+                if (data.getCount() > 0) {
+                    List<Image> images = new ArrayList<>();
+                    data.moveToFirst();
+                    do{
+                        String path = data.getString(data.getColumnIndexOrThrow(VIDEO_PROJECTION[0]));
+                        String name = data.getString(data.getColumnIndexOrThrow(VIDEO_PROJECTION[1]));
+                        long dateTime = data.getLong(data.getColumnIndexOrThrow(VIDEO_PROJECTION[2]));
+                        if(!fileExist(path)){continue;}
+                        Image image = null;
+                        if (!TextUtils.isEmpty(name)) {
+                            image = new Image(path, name, dateTime);
+                            images.add(image);
+                        }
+                        if( !hasFolderGened ) {
+                            // get all folder data
+                            File folderFile = new File(path).getParentFile();
+                            if(folderFile != null && folderFile.exists()){
+                                String fp = folderFile.getAbsolutePath();
+                                Folder f = getFolderByPath(fp);
+                                if(f == null){
+                                    Folder folder = new Folder();
+                                    folder.name = folderFile.getName();
+                                    folder.path = fp;
+                                    folder.cover = image;
+                                    List<Image> imageList = new ArrayList<>();
+                                    imageList.add(image);
+                                    folder.images = imageList;
+                                    mResultFolder.add(folder);
+                                }else {
+                                    f.images.add(image);
+                                }
+                            }
+                        }
+
+                    }while(data.moveToNext());
+
+                    mImageAdapter.setData(images);
+                    if(resultList != null && resultList.size()>0){
+                        mImageAdapter.setDefaultSelected(resultList);
+                    }
+                    if(!hasFolderGened) {
+                        mFolderAdapter.setData(mResultFolder);
+                        hasFolderGened = true;
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+
+        }
+    };
+    //加载本地图片
     private LoaderManager.LoaderCallbacks<Cursor> mLoaderCallback = new LoaderManager.LoaderCallbacks<Cursor>() {
 
         private final String[] IMAGE_PROJECTION = {
@@ -521,6 +705,9 @@ public class MultiImageSelectorFragment extends Fragment {
     private boolean isTakePhoto(){
         return getArguments() == null || getArguments().getBoolean(EXTRA_TAKE_PHOTO, false);
 
+    }
+    private boolean isSelectVideo(){
+        return getArguments() == null || getArguments().getBoolean(EXTRA_SELECT_VIDEO,false);
     }
     private int selectMode(){
         return getArguments() == null ? MODE_MULTI : getArguments().getInt(EXTRA_SELECT_MODE);

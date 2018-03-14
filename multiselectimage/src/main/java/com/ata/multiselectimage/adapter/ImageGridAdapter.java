@@ -10,10 +10,9 @@ import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
-import com.ata.multiselectimage.MultiImageSelectorFragment;
 import com.ata.multiselectimage.R;
 import com.ata.multiselectimage.bean.Image;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -219,13 +218,15 @@ public class ImageGridAdapter  extends BaseAdapter {
             File imageFile = new File(data.path);
             if (imageFile.exists()) {
                 // 显示图片
-                Picasso.with(mContext)
+                /*Picasso.with(mContext)
                         .load(imageFile)
                         .placeholder(R.drawable.mis_default_error)
                         .tag(MultiImageSelectorFragment.TAG)
                         .resize(mGridWidth, mGridWidth)
                         .centerCrop()
-                        .into(image);
+                        .into(image);*/
+                Glide.with(mContext).load(imageFile).placeholder(R.drawable.mis_default_error).error(R.drawable.mis_default_error).centerCrop().into(image);
+
             }else{
                 image.setImageResource(R.drawable.mis_default_error);
             }

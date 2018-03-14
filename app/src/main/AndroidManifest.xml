@@ -41,6 +41,7 @@
         <activity android:name=".InfoActivity"/>
         <activity android:name=".PathSelectActivity"
             android:theme="@style/Theme.AppCompat"/>
+        <activity android:name=".PlayVideoActivity"/>
     </application>
 
 </manifest>

@@ -44,7 +44,13 @@ public class MainActivity extends Activity {
                  * lstPhotoPath:   要预览的数据源
                  * lstPhotoPath.get(i)：当前点击的图片地址
                  * */
-                MultiImageSelector.create().startImageShow(MainActivity.this,lstPhotoPath,lstPhotoPath.get(i));
+                if(lstPhotoPath.get(i).endsWith("mp4")||lstPhotoPath.get(i).endsWith("3gp")){
+                    Intent intent=new Intent(MainActivity.this,PlayVideoActivity.class);
+                    intent.putExtra(PlayVideoActivity.VIDEO_PATH,lstPhotoPath.get(i));
+                    startActivity(intent);
+                }else {
+                    MultiImageSelector.create().startImageShow(MainActivity.this, lstPhotoPath, lstPhotoPath.get(i));
+                }
             }
         });
         grid_show.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -120,6 +126,9 @@ public class MainActivity extends Activity {
                MultiImageSelector.create().takePhoto(true).registerFile(file1).start(MainActivity.this,REQUEST_PHOTO_IMAGE);*/
                 Intent intent=new Intent(MainActivity.this,PathSelectActivity.class);
                 startActivityForResult(intent,REQUEST_CODE_IMAGE_PATH);
+                break;
+            case R.id.bt_select_video:
+                MultiImageSelector.create().selectVideo(true).start(MainActivity.this,REQUEST_PHOTO_IMAGE);
                 break;
         }
     }

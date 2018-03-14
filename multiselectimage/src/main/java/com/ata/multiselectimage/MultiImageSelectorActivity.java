@@ -46,6 +46,9 @@ public class MultiImageSelectorActivity extends AppCompatActivity implements Mul
     public static final String EXTRA_SHOW_CAMERA = "show_camera";
     /**是否是直接拍照操作*/
     public static final String EXTRA_TAKE_PHOTO="take_photo";
+
+    /**是否是选择视频的操作*/
+    public static final String EXTRA_SELECT_VIDEO="select_video";
     /**用户自定义存图片的文件路径*/
     public static final String EXTRA_PHOTO_FILE="photo_file";
     /** Result data set，ArrayList&lt;String&gt;*/
@@ -59,6 +62,7 @@ public class MultiImageSelectorActivity extends AppCompatActivity implements Mul
     private Button mSubmitButton;
     private int mDefaultCount = DEFAULT_IMAGE_SIZE;
     boolean isTakePhoto=false;
+    boolean isVideo=false;
     private String filePath=null;
     private boolean isShow=true;
     Toolbar toolbar;
@@ -91,6 +95,7 @@ public class MultiImageSelectorActivity extends AppCompatActivity implements Mul
             resultList = intent.getStringArrayListExtra(EXTRA_DEFAULT_SELECTED_LIST);
         }
         isTakePhoto=intent.getBooleanExtra(EXTRA_TAKE_PHOTO,false);
+        isVideo=intent.getBooleanExtra(EXTRA_SELECT_VIDEO,false);
         filePath=intent.getStringExtra(EXTRA_PHOTO_FILE);
 
         mSubmitButton = (Button) findViewById(R.id.commit);
@@ -191,6 +196,7 @@ public class MultiImageSelectorActivity extends AppCompatActivity implements Mul
                 bundle.putInt(MultiImageSelectorFragment.EXTRA_SELECT_MODE, mode);
                 bundle.putBoolean(MultiImageSelectorFragment.EXTRA_SHOW_CAMERA, isShow);
                 bundle.putBoolean(MultiImageSelectorFragment.EXTRA_TAKE_PHOTO,isTakePhoto);
+                bundle.putBoolean(MultiImageSelectorFragment.EXTRA_SELECT_VIDEO,isVideo);
                 if(!TextUtils.isEmpty(filePath)){
                     bundle.putString(MultiImageSelectorFragment.EXTRA_PHOTO_PATH,filePath);
                 }
